@@ -1,9 +1,11 @@
-package edu.eci.pdsw.samples.services;
+package edu.eci.pdsw.samples.services.impl;
 
 import edu.eci.pdsw.samples.entities.Cliente;
 import edu.eci.pdsw.samples.entities.Item;
 import edu.eci.pdsw.samples.entities.ItemRentado;
 import edu.eci.pdsw.samples.entities.TipoItem;
+import edu.eci.pdsw.samples.services.ExcepcionServiciosAlquiler;
+import edu.eci.pdsw.samples.services.ServiciosAlquiler;
 
 import java.io.Serializable;
 import java.sql.Date;
@@ -14,13 +16,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  *
  * @author 2106913
  */
-public class ServiciosAlquilerItemsStub extends ServiciosAlquiler implements Serializable{
+public class ServiciosAlquilerItemsStub implements ServiciosAlquiler {
     
     private static final int MULTA_DIARIA=5000;
     private final static long MILLISECONDS_IN_DAY = 24 * 60 * 60 * 1000;
@@ -40,9 +41,7 @@ public class ServiciosAlquilerItemsStub extends ServiciosAlquiler implements Ser
         itemsrentados = new HashMap<>();
         tipositems = new HashMap<>();
         mapaPrestamosPorIdCliente=new HashMap<>();
-
-        poblar();
-
+        //poblar();
     }
 
     @Override
@@ -57,11 +56,6 @@ public class ServiciosAlquilerItemsStub extends ServiciosAlquiler implements Ser
     @Override
     public List<Cliente> consultarClientes() throws ExcepcionServiciosAlquiler {
         return  new LinkedList<>(clientes.values());
-    }
-
-
-    public Map<Long, Cliente> getClientes() {
-        return clientes;
     }
 
     @Override
@@ -143,7 +137,7 @@ public class ServiciosAlquilerItemsStub extends ServiciosAlquiler implements Ser
         LocalDate ld=date.toLocalDate();
         LocalDate ld2=ld.plusDays(numdias);
         
-        ItemRentado ir=new ItemRentado(item,date,java.sql.Date.valueOf(ld2));
+        ItemRentado ir=new ItemRentado(0,item,date,java.sql.Date.valueOf(ld2));
 
         if (clientes.containsKey(docu)) {
             Cliente c = clientes.get(docu);
@@ -198,9 +192,7 @@ public class ServiciosAlquilerItemsStub extends ServiciosAlquiler implements Ser
             
             LocalDate fechaMinimaEntrega=ir.getFechafinrenta().toLocalDate();
             LocalDate fechaEntrega=fechaDevolucion.toLocalDate();
-
-            long diasRetraso = (fechaEntrega.isBefore(fechaMinimaEntrega))? 0:ChronoUnit.DAYS.between(fechaMinimaEntrega, fechaEntrega);
-
+            long diasRetraso = ChronoUnit.DAYS.between(fechaMinimaEntrega, fechaEntrega);
             return diasRetraso*MULTA_DIARIA;
         }
     }
@@ -243,8 +235,6 @@ public class ServiciosAlquilerItemsStub extends ServiciosAlquiler implements Ser
     
     private void poblar() {
         
-        LOG.info("inicializando datos...");
-        
         TipoItem ti1=new TipoItem(1,"Video");
         TipoItem ti2=new TipoItem(2,"Juego");
         TipoItem ti3=new TipoItem(3,"Musica");
@@ -267,9 +257,9 @@ public class ServiciosAlquilerItemsStub extends ServiciosAlquiler implements Ser
         itemsDisponibles.put(6, i6);
         
         
-        ItemRentado ir1=new ItemRentado(i1, java.sql.Date.valueOf("2017-01-01"), java.sql.Date.valueOf("2017-03-12"));
-        ItemRentado ir2=new ItemRentado(i2, java.sql.Date.valueOf("2017-01-04"), java.sql.Date.valueOf("2017-04-7"));
-        ItemRentado ir3=new ItemRentado(i1, java.sql.Date.valueOf("2017-01-07"), java.sql.Date.valueOf("2017-07-12"));
+        ItemRentado ir1=new ItemRentado(0,i1, java.sql.Date.valueOf("2017-01-01"), java.sql.Date.valueOf("2017-03-12"));
+        ItemRentado ir2=new ItemRentado(0,i2, java.sql.Date.valueOf("2017-01-04"), java.sql.Date.valueOf("2017-04-7"));
+        ItemRentado ir3=new ItemRentado(0,i1, java.sql.Date.valueOf("2017-01-07"), java.sql.Date.valueOf("2017-07-12"));
         
         ArrayList<ItemRentado> list1 = new ArrayList<>();
         list1.add(ir1);
@@ -286,14 +276,11 @@ public class ServiciosAlquilerItemsStub extends ServiciosAlquiler implements Ser
         clientes.put(c2.getDocumento(), c2);
         clientes.put(c3.getDocumento(), c3);
 
-
     }
-    private static final Logger LOG = Logger.getLogger(ServiciosAlquilerItemsStub.class.getName());
 
 
 
     
-
 
 }
 
